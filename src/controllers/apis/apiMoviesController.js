@@ -33,25 +33,76 @@ module.exports = {
         include: [{ association: "actors" }, { association: "genre" }],
       }).then((movie) => {
         if (movie) {
-            return res.status(200).json({
-                meta: {
-                    endPoint: getUrl(req),
-                    name: movie.title,
-                  },
-                  data: movie, 
-            })
+          return res.status(200).json({
+            meta: {
+              endPoint: getUrl(req),
+              name: movie.title,
+            },
+            data: movie,
+          });
         } else {
-            res.status(404).json({
-                meta: {
-                    status: 404,
-                    msg: "ID not found",
-                  },
-            })
+          res.status(404).json({
+            meta: {
+              status: 404,
+              msg: "ID not found",
+            },
+          });
         }
       });
     }
   },
-  create: (req, res) => {},
+  create: (req, res) => {
+    const { title, rating, awards, release_date, length, genre_id } = req.body;
+    db.Movie.create({
+      title,
+      rating,
+      awards,
+      release_date,
+      length,
+      genre_id,
+    })
+      .then((movie) => {
+        res.status(201).json({
+          meta: {
+            endPoint: getUrl(req),
+            msg: "Movie added successfully",
+          },
+          data: movie,
+        });
+      })
+      .catch((error) => {
+        switch (error.name) {
+          case "SequelizeValidationError":
+            let errorsMsg = [];
+            let notNullErrors = [];
+            let validationsErrors = [];
+            error.errors.forEach((error) => {
+              errorsMsg.push(error.message);
+              if (error.type == "notNull Violation") {
+                notNullErrors.push(error.message);
+              }
+              if (error.type == "Validation error") {
+                validationsErrors.push(error.message);
+              }
+            });
+            let response = {
+              status: 400,
+              message: "missing or wrong data",
+              errors: {
+                quantity: errorsMsg.length,
+                msg: errorsMsg,
+                notNull: notNullErrors,
+                validations: validationsErrors,
+              },
+            };
+            return res.status(400).json(response);
+          default:
+            return res.status(500).json({
+              error,
+            });
+        }
+      });
+  },
   update: (req, res) => {},
   delete: (req, res) => {},
 };
