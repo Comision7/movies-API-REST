@@ -103,6 +103,72 @@ module.exports = {
         }
       });
   },
-  update: (req, res) => {},
-  delete: (req, res) => {},
+  update: (req, res) => {
+    const { title, rating, awards, release_date, length, genre_id } = req.body;
+
+    db.Movie.update(
+      {
+        title,
+        rating,
+        awards,
+        release_date,
+        length,
+        genre_id,
+      },
+      {
+        where: {
+          id: req.params.id,
+        },
+      }
+    )
+      .then((result) => {
+        if (result) {
+          return res.status(200).json({
+            msg: "updated successfully",
+          });
+        } else {
+          return res.status(400).json({
+            msg: "no changes",
+          });
+        }
+      })
+      .catch((error) => res.status(500).json(error));
+  },
+  delete: (req, res) => {
+    let actorUpdate = db.Actor.update(
+      {
+        favorite_movie_id: null,
+      },
+      {
+        where: {
+          favorite_movie_id: req.params.id,
+        },
+      }
+    );
+    let actorMovieUpdate = db.actor_movie.destroy({
+        where: {
+            movie_id: req.params.id
+        }
+    })
+    Promise.all([actorUpdate, actorMovieUpdate])
+    .then(
+        db.Movie.destroy({
+            where: {
+                id: req.params.id
+            }
+        })
+        .then(result => {
+            if (result) {
+                return res.status(200).json({
+                  msg: "movie deleted successfully",
+                });
+              } else {
+                return res.status(400).json({
+                  msg: "no changes",
+                });
+              }
+        })
+      .catch((error) => res.status(500).json(error))
+    )
+  },
 };
