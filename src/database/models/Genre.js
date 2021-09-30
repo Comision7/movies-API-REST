@@ -13,11 +13,32 @@ module.exports = (sequelize, dataTypes) => {
         // updated_at: dataTypes.TIMESTAMP,
         name: {
             type: dataTypes.STRING(100),
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notNull: {
+                    args: true,
+                    msg: "The field name can not be null"
+                },
+                notEmpty: {
+                    args: true,
+                    msg: "Write the name"
+                }
+            }
         },
         ranking: {
             type: dataTypes.BIGINT(10).UNSIGNED,
-            allowNull: false
+            allowNull: false,
+            unique: {
+                args: true,
+                msg: "Choose other number"
+            },
+            validate: {
+                notNull: {
+                    args: true,
+                    msg: "Ranking can not be null"
+                },
+            }
+
         },
         active: {
             type: dataTypes.BOOLEAN,
