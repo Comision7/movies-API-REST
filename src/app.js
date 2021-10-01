@@ -11,6 +11,7 @@ const moviesRoutes = require('./routes/moviesRoutes');
 const genresRoutes = require('./routes/genresRoutes');
 const apiRoutes = require('./routes/apiRoutes');
 
+
 //Aquí pueden colocar las rutas de las APIs
 
 

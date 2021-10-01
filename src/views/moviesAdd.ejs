@@ -35,6 +35,14 @@
                     <% }); %>
                 </select>
             </p>
+            <p>
+                <select name="genre_id" id="" required>
+                    <option value="" disabled selected>- Seleccione el género - </option>
+                    <% provincias.forEach(provincia => { %>
+                    <option value="<%= provincia.nombre %>"><%= provincia.nombre %></option>
+                    <% }); %>
+                </select>
+            </p>
             <br>
             <p> <button class="botonAgregar" type="submit">Agregar</button>
             
